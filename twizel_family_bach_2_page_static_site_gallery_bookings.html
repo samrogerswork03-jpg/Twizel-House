@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Twizel Family Bach</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <style>
+    :root{
+      --bg:#FAFAF7; --text:#0F0F0F; --muted:#6b7280; --accent:#4E7DA6; --accent2:#2E6F6B;
+      --card:#ffffff; --ring:#e5e7eb; --ok:#065f46; --bad:#7f1d1d;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;background:linear-gradient(#FAFAF7ee,#FAFAF7ee);backdrop-filter:saturate(120%) blur(4px);z-index:50;border-bottom:1px solid var(--ring)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:.4px}
+    .tabs{display:flex;gap:8px}
+    .tab{padding:8px 12px;border-radius:12px;border:1px solid var(--ring);}
+    .tab.active{background:var(--text);color:white;border-color:var(--text)}
+    .hero{display:grid;gap:14px;padding:28px 0}
+    .tag{display:inline-flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:16px;padding:14px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--text);font-weight:600}
+    .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+    .btn.block{width:100%;justify-content:center}
+    .muted{color:var(--muted)}
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .kpi{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px dashed var(--ring);border-radius:12px}
+    .map{width:100%;border-radius:16px;border:1px solid var(--ring);display:block}
+    .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .gallery img{width:100%;display:block;border-radius:12px;border:1px solid var(--ring);cursor:pointer}
+
+    /* Bookings */
+    .gate{display:grid;gap:10px}
+    .row{display:grid;gap:8px}
+    .field{display:grid;gap:6px}
+    input,select,textarea{padding:10px 12px;border-radius:10px;border:1px solid var(--ring);background:white;font:inherit}
+    label{font-size:12px;color:var(--muted)}
+    .stack{display:grid;gap:12px}
+    .calwrap{display:grid;gap:12px}
+    .calgrid{display:grid;grid-template-columns:1fr;gap:12px}
+    .rules{font-size:14px;color:#374151}
+    .banner{border-radius:12px;padding:10px 12px;border:1px solid var(--ring)}
+    .ok{background:#ecfdf5;border-color:#a7f3d0;color:var(--ok)}
+    .bad{background:#fef2f2;border-color:#fecaca;color:var(--bad)}
+
+    @media (min-width:900px){
+      .grid{grid-template-columns:2fr 1fr}
+      .gallery{grid-template-columns:repeat(4,1fr)}
+      .calgrid{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav container">
+      <div class="brand">Twizel Family Bach</div>
+      <nav class="tabs">
+        <a href="#/gallery" class="tab" id="tabGallery">Gallery</a>
+        <a href="#/bookings" class="tab" id="tabBookings">Bookings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="app"></main>
+
+  <template id="tpl-gallery">
+    <section class="hero">
+      <div class="tag">🏔️ Twizel, Mackenzie District • Alpine escape</div>
+      <h1 style="margin:0">Two families, one alpine escape.</h1>
+      <p class="muted" style="margin:0">Exactly two pages. No tracking. Minimal and fast. Dates in <strong>DD/MM/YYYY</strong>, timezone <strong>Pacific/Auckland</strong>.</p>
+      <div><a class="btn primary" href="#/bookings">Go to Bookings</a></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2 style="margin-top:0">Photo gallery</h2>
+        <div class="gallery" id="galleryGrid"></div>
+      </div>
+      <aside class="stack">
+        <div class="card">
+          <h3 style="margin-top:0">Quick info</h3>
+          <div class="kpis">
+            <div class="kpi">Cookhouse • sleeps 6–8</div>
+            <div class="kpi">Shearing Shed • sleeps 2–4</div>
+            <div class="kpi">Off‑street parking</div>
+            <div class="kpi">Wi‑Fi: <span id="wifiFlag">Yes</span></div>
+            <div class="kpi">BBQ available</div>
+            <div class="kpi">Drying room</div>
+          </div>
+          <p class="muted" style="margin:12px 0 0">Key in lockbox by Cookhouse door; code in the family chat.</p>
+          <p class="muted" style="margin:6px 0 0">Rules: Leave it tidy, rubbish out, linen washed/taken, no parties.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Map (static)</h3>
+          <img class="map" alt="Static map of Twizel area" src="https://maps.googleapis.com/maps/api/staticmap?center=Twizel+NZ&zoom=12&size=640x360&scale=2&maptype=terrain&key=&markers=color:blue%7CTwizel+NZ" />
+          <p class="muted" style="margin:8px 0 0">Static image only. No tracking. Replace this image URL with your own (no API key required if you host a static image).</p>
+        </div>
+      </aside>
+    </section>
+  </template>
+
+  <template id="tpl-bookings">
+    <section class="stack">
+      <div class="card" id="passcodeCard">
+        <h2 style="margin:0 0 6px">Bookings (family‑only)</h2>
+        <p class="muted" style="margin:0 0 10px">Enter the shared passcode to view calendars and make a booking.</p>
+        <div class="gate">
+          <div class="field"><label>Passcode</label><input id="passcodeInput" type="password" placeholder="••••••" /></div>
+          <button class="btn primary" id="unlockBtn">Unlock</button>
+          <div class="banner bad" id="passcodeErr" style="display:none">Incorrect passcode.</div>
+        </div>
+      </div>
+
+      <div id="bookingContent" style="display:none" class="stack">
+        <div class="card rules">
+          <strong>Rules & logic</strong>
+          <ul>
+            <li>Max stay 14 nights. Same‑day bookings allowed before 12:00 NZT.</li>
+            <li>Partial overlaps are conflicts. Blackout dates trump bookings.</li>
+            <li>All dates are <strong>DD/MM/YYYY</strong> in <strong>Pacific/Auckland</strong>.</li>
+            <li>Choose <em>Both</em> to reserve Cookhouse + Shearing Shed together.</li>
+          </ul>
+        </div>
+
+        <div class="calwrap">
+          <div class="calgrid">
+            <div class="card">
+              <h3 style="margin-top:0">Cookhouse</h3>
+              <div id="calCook"></div>
+            </div>
+            <div class="card">
+              <h3 style="margin-top:0">Shearing Shed</h3>
+              <div id="calShed"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">New booking</h3>
+          <div class="row">
+            <div class="field">
+              <label>Space</label>
+              <select id="fSpace">
+                <option value="cookhouse">Cookhouse</option>
+                <option value="shearing-shed">Shearing Shed</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Family</label>
+              <select id="fFamily">
+                <option>Family A</option>
+                <option>Family B</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Start Date (DD/MM/YYYY)</label>
+              <input id="fStart" placeholder="10/11/2025" />
+            </div>
+            <div class="field">
+              <label>End Date (DD/MM/YYYY, inclusive)</label>
+              <input id="fEnd" placeholder="14/11/2025" />
+            </div>
+            <div class="field">
+              <label>Guests</label>
+              <input id="fGuests" type="number" min="1" value="2" />
+            </div>
+            <div class="field">
+              <label>Notes</label>
+              <textarea id="fNotes" rows="2" placeholder="Optional"></textarea>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="fEmail" type="email" placeholder="you@example.com" />
+            </div>
+            <div class="field">
+              <label><input id="fRules" type="checkbox" /> I’ve read the basic house rules</label>
+            </div>
+            <button class="btn primary" id="submitBooking">Submit booking</button>
+            <div class="banner ok" id="okMsg" style="display:none"></div>
+            <div class="banner bad" id="errMsg" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <script>
+    // ---------- Utilities ----------
+    const NZ_TZ = 'Pacific/Auckland';
+    const PASSCODE_HASHLESS = 'twizel'; // replace during deployment; demo only
+
+    const fmtNZ = new Intl.DateTimeFormat('en-NZ', {timeZone: NZ_TZ, day:'2-digit', month:'2-digit', year:'numeric'});
+    const toDDMMYYYY = (d)=> fmtNZ.format(d);
+    const parseDDMMYYYY = (s)=>{
+      const m = /^([0-3]\d)\/([0-1]\d)\/(\d{4})$/.exec(s?.trim()||'');
+      if(!m) return null;
+      const [_,dd,mm,yyyy] = m;
+      // Create Date as NZ midnight by building ISO and letting JS create local then adjust to NZ offset visually only
+      const iso = `${yyyy}-${mm}-${dd}T00:00:00`; // treat as local; we only use date math in days
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return null;
+      d.setHours(0,0,0,0);
+      return d;
+    };
+    const addDays = (d,days)=>{ const x = new Date(d); x.setDate(x.getDate()+days); return x; };
+
+    // exclusive end for calendars
+    const inclusiveToExclusive = (endInclusive)=> addDays(endInclusive,1);
+
+    // Storage (simulate backend). Persist to localStorage for demo.
+    const DB_KEY = 'twizel-demo-bookings-v1';
+    const COLORS = { cookhouse:'#2E6F6B', 'shearing-shed':'#4E7DA6' };
+
+    function loadBookings(){
+      const raw = localStorage.getItem(DB_KEY);
+      if(raw) try{ return JSON.parse(raw); }catch(e){ }
+      // seed data
+      const seed = [
+        {id:crypto.randomUUID(), resource:'cookhouse', family:'Family A', start:'2025-11-10', endEx:'2025-11-15', guests:4, notes:'Anniversary'},
+        {id:crypto.randomUUID(), resource:'shearing-shed', family:'Family B', start:'2025-11-12', endEx:'2025-11-16', guests:2, notes:''},
+        {id:crypto.randomUUID(), resource:'cookhouse', family:'Family B', start:'2025-11-20', endEx:'2025-11-23', guests:3, notes:''},
+        {id:crypto.randomUUID(), resource:'shearing-shed', family:'Family A', start:'2025-11-25', endEx:'2025-11-29', guests:2, notes:''},
+        // both-spaces booking (two rows with same parent)
+        (()=>{const pid=crypto.randomUUID();return [
+          {id:crypto.randomUUID(), parentId:pid, resource:'cookhouse', family:'Family A', start:'2025-12-05', endEx:'2025-12-08', guests:6, notes:'Both spaces for reunion'},
+          {id:crypto.randomUUID(), parentId:pid, resource:'shearing-shed', family:'Family A', start:'2025-12-05', endEx:'2025-12-08', guests:6, notes:'Both spaces for reunion'}
+        ]})()
+      ].flat();
+      localStorage.setItem(DB_KEY, JSON.stringify(seed));
+      return seed;
+    }
+    function saveBookings(rows){ localStorage.setItem(DB_KEY, JSON.stringify(rows)); }
+
+    // Conflict detection (overlap when newStart < existingEndEx && newEndEx > existingStart)
+    function hasConflict(rows, resource, startISO, endExISO){
+      return rows.some(r=> r.resource===resource && (startISO < r.endEx) && (endExISO > r.start));
+    }
+
+    // ---------- Routing ----------
+    const app = document.getElementById('app');
+    function setActiveTab(){
+      const hash = location.hash || '#/gallery';
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      if(hash.startsWith('#/bookings')) document.getElementById('tabBookings').classList.add('active');
+      else document.getElementById('tabGallery').classList.add('active');
+    }
+    function render(){
+      setActiveTab();
+      const hash = location.hash || '#/gallery';
+      if(hash.startsWith('#/bookings')) renderBookings(); else renderGallery();
+    }
+
+    // ---------- Gallery ----------
+    const galleryImgs = [
+      'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa7?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523419409543-a5e549c1cdd9?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1464207687429-7505649dae38?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1601333144130-8cbb312386b1?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'
+    ];
+    function renderGallery(){
+      app.innerHTML = document.getElementById('tpl-gallery').innerHTML;
+      const grid = document.getElementById('galleryGrid');
+      galleryImgs.forEach(src=>{
+        const img = new Image(); img.src = src; img.alt = 'Twizel alpine photo';
+        img.addEventListener('click', ()=> window.open(src, '_blank'));
+        grid.appendChild(img);
+      });
+    }
+
+    // ---------- Bookings ----------
+    let calCook, calShed;
+    function renderBookings(){
+      app.innerHTML = document.getElementById('tpl-bookings').innerHTML;
+      const passOk = sessionStorage.getItem('twizel_pass') === '1';
+      const card = document.getElementById('passcodeCard');
+      const content = document.getElementById('bookingContent');
+      if(passOk){ card.style.display='none'; content.style.display='grid'; initCalendars(); initForm(); }
+      document.getElementById('unlockBtn').onclick = ()=>{
+        const val = document.getElementById('passcodeInput').value.trim();
+        if(val === PASSCODE_HASHLESS){ sessionStorage.setItem('twizel_pass','1'); card.style.display='none'; content.style.display='grid'; initCalendars(); initForm(); }
+        else { const e = document.getElementById('passcodeErr'); e.style.display='block'; e.textContent='Incorrect passcode.'; }
+      };
+    }
+
+    function initCalendars(){
+      const rows = loadBookings();
+      const opts = (resource)=>({
+        initialView:'dayGridMonth',
+        timeZone:NZ_TZ,
+        headerToolbar:{left:'prev,next today', center:'title', right:'dayGridMonth,dayGridWeek'},
+        height:'auto',
+        firstDay:1,
+        events: rows.filter(r=>r.resource===resource).map(r=>({
+          id:r.id,
+          title:r.family,
+          start:r.start,
+          end:r.endEx, // exclusive
+          color: COLORS[resource],
+          extendedProps:{notes:r.notes}
+        })),
+        eventDidMount: (arg)=>{
+          const start = new Date(arg.event.startStr);
+          const endEx = new Date(arg.event.endStr);
+          const endInc = addDays(endEx,-1);
+          arg.el.title = `${arg.event.title}: ${toDDMMYYYY(start)}–${toDDMMYYYY(endInc)}${arg.event.extendedProps.notes?"\n"+arg.event.extendedProps.notes:''}`;
+        }
+      });
+      calCook = new FullCalendar.Calendar(document.getElementById('calCook'), opts('cookhouse'));
+      calShed = new FullCalendar.Calendar(document.getElementById('calShed'), opts('shearing-shed'));
+      calCook.render();
+      calShed.render();
+    }
+
+    function refreshCalendars(){
+      if(!calCook||!calShed) return;
+      const rows = loadBookings();
+      [calCook,calShed].forEach(c=>c.removeAllEvents());
+      rows.forEach(r=>{
+        const ev = { id:r.id, title:r.family, start:r.start, end:r.endEx, color: COLORS[r.resource], extendedProps:{notes:r.notes} };
+        (r.resource==='cookhouse'?calCook:calShed).addEvent(ev);
+      });
+    }
+
+    function initForm(){
+      const okMsg = document.getElementById('okMsg');
+      const errMsg = document.getElementById('errMsg');
+      function showOk(t){ okMsg.textContent=t; okMsg.style.display='block'; errMsg.style.display='none'; }
+      function showErr(t){ errMsg.textContent=t; errMsg.style.display='block'; okMsg.style.display='none'; }
+
+      document.getElementById('submitBooking').onclick = ()=>{
+        const space = document.getElementById('fSpace').value;
+        const family = document.getElementById('fFamily').value;
+        const s = parseDDMMYYYY(document.getElementById('fStart').value);
+        const e = parseDDMMYYYY(document.getElementById('fEnd').value);
+        const guests = parseInt(document.getElementById('fGuests').value||'0',10);
+        const notes = document.getElementById('fNotes').value.trim();
+        const email = document.getElementById('fEmail').value.trim();
+        const read = document.getElementById('fRules').checked;
+
+        if(!read) return showErr('Please confirm you have read the rules.');
+        if(!s || !e) return showErr('Enter valid dates as DD/MM/YYYY.');
+        if(e < s) return showErr('End date must be on/after start date.');
+        const len = Math.round((e - s)/86400000) + 1; // inclusive nights
+        if(len > 14) return showErr('Max stay is 14 nights.');
+        const now = new Date(); now.setHours(0,0,0,0);
+        const todayNoon = new Date(); todayNoon.setHours(12,0,0,0);
+        if(s < now) return showErr('Start date cannot be in the past.');
+        if(toDDMMYYYY(s) === toDDMMYYYY(new Date()) && (new Date() > todayNoon)) return showErr('Same‑day bookings close at 12:00 NZT.');
+
+        const rows = loadBookings();
+        const startISO = s.toISOString().slice(0,10);
+        const endExISO = inclusiveToExclusive(e).toISOString().slice(0,10);
+
+        const commit = (resource)=>{
+          if(hasConflict(rows, resource, startISO, endExISO)) return false;
+          rows.push({ id:crypto.randomUUID(), resource, family, start:startISO, endEx:endExISO, guests, notes });
+          return true;
+        };
+
+        if(space==='both'){
+          const pid = crypto.randomUUID();
+          if(hasConflict(rows,'cookhouse',startISO,endExISO) || hasConflict(rows,'shearing-shed',startISO,endExISO)){
+            return showErr('Conflict: one or both spaces are already booked for part of that range.');
+          }
+          rows.push({ id:crypto.randomUUID(), parentId:pid, resource:'cookhouse', family, start:startISO, endEx:endExISO, guests, notes });
+          rows.push({ id:crypto.randomUUID(), parentId:pid, resource:'shearing-shed', family, start:startISO, endEx:endExISO, guests, notes });
+        } else {
+          if(!commit(space)) return showErr('Conflict: that space is already booked during part of that range.');
+        }
+        saveBookings(rows);
+        refreshCalendars();
+        showOk(`Booked ${space==='both'?'Both spaces':(space==='cookhouse'?'Cookhouse':'Shearing Shed')} ${toDDMMYYYY(s)}–${toDDMMYYYY(e)} for ${family}.`);
+      };
+    }
+
+    // initial mount
+    window.addEventListener('hashchange', render);
+    render();
+  </script>
+</body>
+</html>
